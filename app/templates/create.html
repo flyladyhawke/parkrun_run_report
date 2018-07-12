@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>parkrun details</h1>
+    {% if form %}
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.event_name.label }}<br>
+            {{ form.event_name(size=32) }}
+        </p>
+        <p>
+            {{ form.event_number.label }}<br>
+            {{ form.event_number(size=32) }}
+        </p>
+        <p>
+            {{ form.week_number.label }}<br>
+            {{ form.week_number }}
+        </p>
+        <p>
+            {{ form.parameters.label }}<br>
+            {{ form.parameters(size=100) }}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    {% endif %}
+    {% if result %}
+        {% for item in result.links %}
+        {% if item[0:4] == 'http' %}
+            <a href="{{ item }}" target="_blank">{{ item }}</a><br/>
+        {% else %}
+            {{ item }}<br/>
+        {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}
