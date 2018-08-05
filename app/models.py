@@ -29,7 +29,7 @@ class Event(db.Model):
     options = db.relationship('EventOption', backref='event', lazy='dynamic')
 
     def __repr__(self):
-        return '<Event {} {}>'.format(self.event_name, self.event_number)
+        return '{} {}'.format(self.event_name, self.event_number)
 
 
 class EventOption(db.Model):
