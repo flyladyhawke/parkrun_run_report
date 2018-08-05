@@ -1,28 +1,14 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
-{% block content %}
-    <h1>parkrun details</h1>
+{% block app_content %}
+    <h1>Create Run Report</h1>
     {% if form %}
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.event_name.label }}<br>
-            {{ form.event_name(size=32) }}
-        </p>
-        <p>
-            {{ form.event_number.label }}<br>
-            {{ form.event_number(size=32) }}
-        </p>
-        <p>
-            {{ form.week_number.label }}<br>
-            {{ form.week_number }}
-        </p>
-        <p>
-            {{ form.parameters.label }}<br>
-            {{ form.parameters(size=100) }}
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
     {% endif %}
     {% if result %}
         {% for item in result.links %}
