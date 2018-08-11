@@ -85,15 +85,44 @@ def section():
         db.session.add(model)
         db.session.commit()
     current = Section.query.all()
-    return render_template('reference/section.html', title='Section', form=form, current=current)
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'link': url_for('admin'), 'text': 'Admin', 'visible': True},
+        {'text': 'Sections'}
+    ]
+    return render_template(
+        'reference/section.html',
+        title='Section',
+        form=form,
+        current=current,
+        breadcrumbs=breadcrumbs
+    )
 
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    return render_template('admin/admin.html', title='Admin')
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'text': 'Admin'}
+    ]
+    return render_template(
+        'admin/admin.html',
+        title='Admin',
+        breadcrumbs=breadcrumbs
+    )
 
 
 @app.route('/event', methods=['GET', 'POST'])
 def events():
     current = Event.query.all()
-    return render_template('admin/events.html', title='Events', current=current)
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'link': url_for('admin'), 'text': 'Admin', 'visible': True},
+        {'text': 'Events'}
+    ]
+    return render_template(
+        'admin/events.html',
+        title='Events',
+        current=current,
+        breadcrumbs=breadcrumbs
+    )
