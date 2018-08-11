@@ -5,6 +5,13 @@ from wtforms.validators import DataRequired
 from app.models import Event, Section
 
 
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember Me')
+    submit = SubmitField('Sign In')
+
+
 class EventForm(FlaskForm):
     event_name = StringField('Event Name', validators=[DataRequired()])
     event_number = StringField('Event Number', validators=[DataRequired()])

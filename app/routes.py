@@ -1,14 +1,36 @@
-from flask import render_template, url_for
+from flask import render_template, url_for, redirect, flash
 from app import app, db
-from app.forms import EventForm, EventSectionForm, SectionForm
+from app.forms import EventForm, EventSectionForm, SectionForm, LoginForm
 from src import run_report_utils
-from app.models import Event, EventSection, Section
+from app.models import Event, EventSection, Section, User
+from flask_login import login_required, current_user, login_user, logout_user
 
 
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html', title='Index',)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        return redirect(url_for('index'))
+    return render_template('auth/login.html', title='Sign In', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 @app.route('/create', methods=['GET', 'POST'])
@@ -25,8 +47,18 @@ def create():
         run_report = run_report_utils.RunReportWeek(form.event_name.data, form.event_number.data)
         result = {'links': run_report.print_urls(form.week_number.data, 8)}
         event_id = model.id
-
-    return render_template('create.html', title='Create', form=form, result=result, event_id=event_id)
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'text': 'Create'}
+    ]
+    return render_template(
+        'create.html',
+        title='Create',
+        form=form,
+        result=result,
+        event_id=event_id,
+        breadcrumbs=breadcrumbs
+    )
 
 
 @app.route('/add_sections/<event_id>', methods=['GET', 'POST'])

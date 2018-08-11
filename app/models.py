@@ -1,4 +1,24 @@
-from app import db
+from app import db, login
+from flask_login import UserMixin
+
+
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50))
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
+    active = db.Column(db.Integer)
+    level = db.Column(db.Integer)
+    password_hash = db.Column(db.String(128))
+    events = db.relationship('Event', backref='created_by', lazy='dynamic')
+
+    def __repr__(self):
+        return '{} {}'.format(self.first_name, self.last_name)
 
 
 class Option(db.Model):
@@ -25,6 +45,7 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_name = db.Column(db.String(50), index=True)
     event_number = db.Column(db.Integer, index=True)
+    created_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     sections = db.relationship('EventSection', backref='event', lazy='dynamic')
     options = db.relationship('EventOption', backref='event', lazy='dynamic')
 
