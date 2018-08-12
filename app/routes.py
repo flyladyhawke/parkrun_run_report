@@ -22,7 +22,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('Invalid username or password', 'danger')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -45,7 +45,7 @@ def register():
         user.active = 1
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        flash('Congratulations, you are now a registered user!', 'success')
         return redirect(url_for('login'))
     return render_template('auth/register.html', title='Register', form=form)
 
@@ -113,7 +113,7 @@ def run_report_update(run_report_id):
         # Check whether there is already this section
         found = RunReportSection.query.filter_by(run_report_id=run_report_id, section_id=form.section_id.data.id).first()
         if found:
-            flash('This section was already added.')
+            flash('This section was already added.', 'danger')
         else:
             model = RunReportSection()
             form.populate_obj(model)
@@ -121,7 +121,7 @@ def run_report_update(run_report_id):
             model.run_report_id = model.run_report_id.id
             db.session.add(model)
             db.session.commit()
-            flash('This section has been added')
+            flash('This section has been added', 'success')
 
     current = RunReportSection.query.filter_by(run_report_id=run_report_id)
     breadcrumbs = [
@@ -138,13 +138,38 @@ def run_report_update(run_report_id):
     )
 
 
+@app.route('/run_report/export/<run_report_id>', methods=['GET', 'POST'])
+def run_report_export(run_report_id):
+    current = RunReport.query.filter_by(id=run_report_id).first()
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'link': url_for('run_reports'), 'text': 'Run Reports', 'visible': True},
+        {'text': 'Export'}
+    ]
+    return render_template(
+        'add_sections.html',
+        title='Sections',
+        current=current,
+        breadcrumbs=breadcrumbs
+    )
+
+
+@app.route('/run_report/delete/<run_report_id>', methods=['GET', 'POST'])
+def run_report_delete(run_report_id):
+    current_model = RunReport.query.filter_by(id=run_report_id).first_or_404()
+    db.session.delete(current_model)
+    db.session.commit()
+    flash('The run report has been deleted.', 'success')
+    return redirect(url_for('run_reports'))
+
+
 @app.route('/run_report_section/delete/<run_report_section_id>', methods=['GET', 'POST'])
 def run_report_section_delete(run_report_section_id):
     current_model = RunReportSection.query.filter_by(id=run_report_section_id).first_or_404()
     run_report_id = current_model.run_report_id
     db.session.delete(current_model)
     db.session.commit()
-    flash('Your changes have been saved.')
+    flash('The run report section has been deleted.', 'success')
     return redirect(url_for('run_report_update', run_report_id=run_report_id))
 
 
@@ -159,7 +184,7 @@ def section():
         form.populate_obj(model)
         db.session.add(model)
         db.session.commit()
-        flash('Your changes have been saved.')
+        flash('Your changes have been saved.', 'success')
     current = Section.query.all()
     breadcrumbs = [
         {'link': url_for('index'), 'text': 'Home', 'visible': True},
@@ -173,6 +198,16 @@ def section():
         current=current,
         breadcrumbs=breadcrumbs
     )
+
+
+@app.route('/reference/section/delete<section_id>', methods=['GET', 'POST'])
+@login_required
+def section_delete(section_id):
+    current_model = Section.query.filter_by(id=section_id).first_or_404()
+    db.session.delete(current_model)
+    db.session.commit()
+    flash('The section has been deleted.', 'success')
+    return redirect(url_for('section'))
 
 
 @app.route('/admin', methods=['GET', 'POST'])

@@ -16,6 +16,7 @@
             <th>Name</th>
             <th>Order</th>
             <th>Description</th>
+            <th data-searchable="false" data-orderable="false">Actions</th>
         </tr>
         </thead>
     <tbody>
@@ -24,6 +25,9 @@
             <td>{{ item.name }}</td>
             <td>{{ item.default_order }}</td>
             <td>{{ item.description }}</td>
+            <td>
+                <a href="{{ url_for('section_delete', section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            </td>
         </tr>
     {% endfor %}
     </tbody>

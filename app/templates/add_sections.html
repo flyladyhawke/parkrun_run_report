@@ -26,7 +26,7 @@
             <td>{{ item.order }}</td>
             <td>{{ 'Yes' if item.display else 'No' }}</td>
             <td>
-            <a href="{{ url_for('event_section_delete', event_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            <a href="{{ url_for('run_report_section_delete', run_report_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
             </td>
         </tr>
     {% endfor %}
