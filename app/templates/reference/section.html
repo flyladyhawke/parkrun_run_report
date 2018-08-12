@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h2 class="sub_title">Add Sections</h2>
+    <div class="row">
+        <div class="col-md-4">
+             {{ wtf.quick_form(form, button_map={'submit': 'warning'}) }}
+        </div>
+    </div>
+    <br/>
+    <hr/>
+    <table class="table" id="event-section-list" data-page-length='25'>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Order</th>
+            <th>Description</th>
+            <th data-searchable="false" data-orderable="false">Actions</th>
+        </tr>
+        </thead>
+    <tbody>
+    {% for item in current %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.default_order }}</td>
+            <td>{{ item.description }}</td>
+            <td>
+                <a href="{{ url_for('section_delete', section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% endblock %}

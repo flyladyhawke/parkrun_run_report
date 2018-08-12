@@ -1,0 +1,61 @@
+<h1 style="padding: 0;margin: 0">Run Report</h1>
+<ul>
+{% for item in toc %}
+<li><a href="#{{item.anchor}}">{{item.heading}}</a></li>
+{% endfor %}
+</ul>
+{% for section in sections %}
+<div style="border: 1px solid #ccc; padding: 5px; text-align: center;">
+<h3 style="padding: 0; margin: 0;"><a name="{{section.anchor}}"></a>{{section.heading}}</h3>
+</div>
+{% if section.content %}
+<div style="border: 1px solid #ccc; padding: 5px;"><p style="padding: 0; margin: 0;">
+<div>
+{% if section.content.list %}
+    {{section.content.start}}
+    <ul style="padding-bottom: 0;padding-top: 0;padding-left: 10px;margin-bottom: 0;margin-top: 0;margin-left: 10px">
+    {% for list_item in section.content.list %}
+     <li>{{list_item}}</li>
+    {% endfor %}
+    </ul>
+    {{section.content.end}}
+{% else %}
+    {{section.content}}
+{% endif %}
+</div>
+</p></div>
+{% endif %}
+{% if section.summary_data %}
+<table style="width: 100%; padding: 0; border-collapse: collapse;" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+    {% for header in section.summary_data.headers %}
+<th style="width:{{header.width}}%; text-align: center; border: 1px solid #ccc !important;" colspan="{{header.colspan}}">
+{% if header.text %}
+    {{header.text}}
+{% else %}
+    {{header.type}} ({{header.limit}} or more from last {{header.events}} events)
+{% endif %}
+</th>
+    {% endfor %}
+</tr>
+{% for row in section.summary_data.data %}
+<tr>
+    {% for column in row %}
+    <td style="padding-left: 10px; border-width: 0 0 1px 0 !important; border-style: solid !important; border-color: #ccc !important;">{{column}}</td>
+    {% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+{% if section.photos %}
+{# TODO add &nbsp; between pictures if portrait and odd count - loop.index is divisibleby 2 #}
+{% for photo in section.photos %}
+    <img src="{{photo.link}}" alt="{{photo.alt}}" width="{{photo.width}}" height="{{photo.height}}"/>{{photo.text}}
+{% endfor %}
+{% endif %}
+{% if section.separator %}
+<div style="height: 10px;"></div>
+{% endif %}
+{% endfor %}
