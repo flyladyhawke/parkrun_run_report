@@ -11,7 +11,10 @@ from werkzeug.exceptions import Forbidden
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', title='Index',)
+    breadcrumbs = [
+        {'text': 'Home'}
+    ]
+    return render_template('index.html', title='Index', breadcrumbs=breadcrumbs)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -29,7 +32,11 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
-    return render_template('auth/login.html', title='Sign In', form=form)
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'text': 'Login'}
+    ]
+    return render_template('auth/login.html', title='Sign In', form=form, breadcrumbs=breadcrumbs)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -47,7 +54,11 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!', 'success')
         return redirect(url_for('login'))
-    return render_template('auth/register.html', title='Register', form=form)
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'text': 'Register'}
+    ]
+    return render_template('auth/register.html', title='Register', form=form, breadcrumbs=breadcrumbs)
 
 
 @app.route('/logout')
@@ -69,7 +80,8 @@ def run_reports():
         'run_reports.html',
         title='Run Reports',
         current=current,
-        breadcrumbs=breadcrumbs
+        breadcrumbs=breadcrumbs,
+        tables=[{'name': 'run-report-list'}],
     )
 
 
@@ -134,7 +146,7 @@ def run_report_update(run_report_id):
         title='Sections',
         form=form,
         current=current,
-        breadcrumbs=breadcrumbs
+        breadcrumbs=breadcrumbs,
     )
 
 
@@ -241,7 +253,8 @@ def users():
         'admin/users.html',
         title='Sections',
         current=current,
-        breadcrumbs=breadcrumbs
+        breadcrumbs=breadcrumbs,
+        tables=[{'name': 'user-list'}],
     )
 
 
