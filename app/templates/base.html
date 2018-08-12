@@ -17,7 +17,9 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/index">Home</a></li>
                     <li><a href="{{ url_for('create') }}">Create Run Report</a></li>
+                    {% if current_user.is_authenticated and current_user.level >= 2 %}
                     <li><a href="{{ url_for('admin') }}">Admin</a></li>
+                    {% endif %}
                  </ul>
                  <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
