@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h2 class="sub_title">Welcome to Run Reports</h2>
+    <ul class="list-group">
+        <li class="list-group-item"><a href="{{ url_for('run_reports') }}">View Run Reports</a></li>
+        <li class="list-group-item"><a href="{{ url_for('create') }}">Create Run Report</a></li>
+        {% if current_user.is_authenticated and current_user.level >= 2 %}
+            <li class="list-group-item"><a href="{{ url_for('admin') }}">Admin</a></li>
+        {% endif %}
+     </ul>
+{% endblock %}

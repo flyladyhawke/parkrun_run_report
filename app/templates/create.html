@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h1>Create Run Report</h1>
+    {% if form %}
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form, button_map={'submit': 'warning'}) }}
+        </div>
+    </div>
+    {% endif %}
+    {% if result %}
+        {% for item in result.links %}
+        {% if item[0:4] == 'http' %}
+            <a href="{{ item }}" target="_blank">{{ item }}</a><br/>
+        {% else %}
+            {{ item }}<br/>
+        {% endif %}
+        {% endfor %}
+        <hr/>
+        <ul class="list-group">
+            <li class="list-group-item"><a href="{{ url_for('run_report_update', run_report_id=run_report_id) }}">Add Sections</a>
+         </ul>
+    {% endif %}
+{% endblock %}

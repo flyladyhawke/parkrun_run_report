@@ -1,0 +1,78 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    {% if title %}{{ title }} - Run Report{% else %}Run Report{% endif %}
+{% endblock %}
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('.static', filename='run_report.css')}}">
+    <link rel="stylesheet" href="{{url_for('.static', filename='datatables.min.css')}}">
+{% endblock %}
+{% block scripts %}
+    {{super()}}
+    <script type="text/javascript" charset="utf8" src="{{url_for('.static', filename='datatables.min.js')}}"></script>
+    {% if tables %}
+        <script type="text/javascript">
+        $(document).ready( function () {
+        {% for table in tables %}
+            var {{ table['name'].replace('-','') }} = $('#{{ table['name'] }}').DataTable({
+                stateSave: true,
+                sPaginationType: 'first_last_numbers',
+                aLengthMenu: [ 10, 25, 50, 100 ],
+            });
+        {% endfor %}
+        } );
+        </script>
+    {% endif %}
+{% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="/index">Home</a></li>
+                    <li><a href="{{ url_for('create') }}">Create Run Report</a></li>
+                    {% if current_user.is_authenticated and current_user.level >= 2 %}
+                    <li><a href="{{ url_for('admin') }}">Admin</a></li>
+                    {% endif %}
+                 </ul>
+                 <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_anonymous %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="page_title p-3 mb-2">parkrun - Run Report</h1>
+        {% if breadcrumbs %}
+        <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        {% for item in breadcrumbs %}
+            {% if item.visible and item.link %}
+                <li class="breadcrumb-item"><a href="{{ item.link }}">{{ item.text }}</a></li>
+            {% elif not item.link %}
+                <li class="breadcrumb-item active" aria-current="page">{{ item.text }}</li>
+            {% endif %}
+        {% endfor %}
+        </ol>
+        </nav>
+        {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}
