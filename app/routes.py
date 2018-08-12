@@ -1,8 +1,8 @@
 from flask import render_template, url_for, redirect, flash, request
 from app import app, db
-from app.forms import EventForm, EventSectionForm, SectionForm, LoginForm, RegistrationForm
+from app.forms import RunReportForm, RunReportSectionForm, SectionForm, LoginForm, RegistrationForm
 from src import run_report_utils
-from app.models import Event, EventSection, Section, User
+from app.models import RunReport, RunReportSection, Section, User
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 from werkzeug.exceptions import Forbidden
@@ -60,14 +60,14 @@ def logout():
 @app.route('/run_reports', methods=['GET', 'POST'])
 @login_required
 def run_reports():
-    current = Event.query.filter_by(created_by_id=current_user.id)
+    current = RunReport.query.filter_by(created_by_id=current_user.id)
     breadcrumbs = [
         {'link': url_for('index'), 'text': 'Home', 'visible': True},
         {'text': 'Run Reports'}
     ]
     return render_template(
         'run_reports.html',
-        title='Events',
+        title='Run Reports',
         current=current,
         breadcrumbs=breadcrumbs
     )
@@ -76,11 +76,11 @@ def run_reports():
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create():
-    form = EventForm()
+    form = RunReportForm()
     result = ''
-    event_id = False
+    run_report_id = False
     if form.validate_on_submit():
-        model = Event()
+        model = RunReport()
         form.populate_obj(model)
         model.created_by_id = current_user.id
         db.session.add(model)
@@ -88,7 +88,8 @@ def create():
 
         run_report = run_report_utils.RunReportWeek(form.event_name.data, form.event_number.data)
         result = {'links': run_report.print_urls(form.week_number.data, 8)}
-        event_id = model.id
+        run_report_id = model.id
+        # return redirect(url_for('run_report_update', run_report_id=run_report_id))
     breadcrumbs = [
         {'link': url_for('index'), 'text': 'Home', 'visible': True},
         {'link': url_for('run_reports'), 'text': 'Run Reports', 'visible': True},
@@ -99,24 +100,52 @@ def create():
         title='Create',
         form=form,
         result=result,
-        event_id=event_id,
+        run_report_id=run_report_id,
         breadcrumbs=breadcrumbs
     )
 
 
-@app.route('/add_sections/<event_id>', methods=['GET', 'POST'])
-def add_sections(event_id):
-    form = EventSectionForm()
-    form.event_id = event_id
+@app.route('/run_report/update/<run_report_id>', methods=['GET', 'POST'])
+def run_report_update(run_report_id):
+    form = RunReportSectionForm()
+    form.run_report_id = run_report_id
     if form.validate_on_submit():
-        model = EventSection()
-        form.populate_obj(model)
-        db.session.add(model)
-        db.session.commit()
+        # Check whether there is already this section
+        found = RunReportSection.query.filter_by(run_report_id=run_report_id, section_id=form.section_id.data.id).first()
+        if found:
+            flash('This section was already added.')
+        else:
+            model = RunReportSection()
+            form.populate_obj(model)
+            model.section_id = model.section_id.id
+            model.run_report_id = model.run_report_id.id
+            db.session.add(model)
+            db.session.commit()
+            flash('This section has been added')
 
-    current = EventSection.query.filter_by(event_id=event_id)
+    current = RunReportSection.query.filter_by(run_report_id=run_report_id)
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'link': url_for('run_reports'), 'text': 'Run Reports', 'visible': True},
+        {'text': 'Update'}
+    ]
+    return render_template(
+        'add_sections.html',
+        title='Sections',
+        form=form,
+        current=current,
+        breadcrumbs=breadcrumbs
+    )
 
-    return render_template('add_sections.html', title='Sections', form=form, current=current)
+
+@app.route('/run_report_section/delete/<run_report_section_id>', methods=['GET', 'POST'])
+def run_report_section_delete(run_report_section_id):
+    current_model = RunReportSection.query.filter_by(id=run_report_section_id).first_or_404()
+    run_report_id = current_model.run_report_id
+    db.session.delete(current_model)
+    db.session.commit()
+    flash('Your changes have been saved.')
+    return redirect(url_for('run_report_update', run_report_id=run_report_id))
 
 
 @app.route('/reference/section', methods=['GET', 'POST'])
@@ -181,23 +210,23 @@ def users():
     )
 
 
-@app.route('/event', methods=['GET', 'POST'])
-@login_required
-def events():
-    if not is_admin():
-        raise Forbidden
-    current = Event.query.all()
-    breadcrumbs = [
-        {'link': url_for('index'), 'text': 'Home', 'visible': True},
-        {'link': url_for('admin'), 'text': 'Admin', 'visible': True},
-        {'text': 'Events'}
-    ]
-    return render_template(
-        'run_reports.html',
-        title='Events',
-        current=current,
-        breadcrumbs=breadcrumbs
-    )
+# @app.route('/run_report', methods=['GET', 'POST'])
+# @login_required
+# def run_reports():
+#     if not is_admin():
+#         raise Forbidden
+#     current = RunReport.query.all()
+#     breadcrumbs = [
+#         {'link': url_for('index'), 'text': 'Home', 'visible': True},
+#         {'link': url_for('admin'), 'text': 'Admin', 'visible': True},
+#         {'text': 'Run Reports'}
+#     ]
+#     return render_template(
+#         'run_reports.html',
+#         title='Run Reports',
+#         current=current,
+#         breadcrumbs=breadcrumbs
+#     )
 
 
 def is_admin():

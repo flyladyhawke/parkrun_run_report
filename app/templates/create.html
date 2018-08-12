@@ -18,6 +18,9 @@
             {{ item }}<br/>
         {% endif %}
         {% endfor %}
-        <a href="{{ url_for('add_sections', event_id=event_id) }}">Add Sections</a>
+        <hr/>
+        <ul class="list-group">
+            <li class="list-group-item"><a href="{{ url_for('run_report_update', run_report_id=run_report_id) }}">Add Sections</a>
+         </ul>
     {% endif %}
 {% endblock %}

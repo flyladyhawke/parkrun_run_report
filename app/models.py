@@ -17,7 +17,7 @@ class User(UserMixin, db.Model):
     active = db.Column(db.Integer)
     level = db.Column(db.Integer)
     password_hash = db.Column(db.String(128))
-    events = db.relationship('Event', backref='created_by', lazy='dynamic')
+    run_reports = db.relationship('RunReport', backref='created_by', lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -43,41 +43,42 @@ class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     description = db.Column(db.String(150))
-    sections = db.relationship('EventSection', backref='section', lazy='dynamic')
+    default_order = db.Column(db.Integer)
+    sections = db.relationship('RunReportSection', backref='section', lazy='dynamic')
 
     def __repr__(self):
-        return '<Section {}>'.format(self.description)
+        return self.name
 
 
-class Event(db.Model):
+class RunReport(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_name = db.Column(db.String(50), index=True)
     event_number = db.Column(db.Integer, index=True)
     created_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    sections = db.relationship('EventSection', backref='event', lazy='dynamic')
-    options = db.relationship('EventOption', backref='event', lazy='dynamic')
+    sections = db.relationship('RunReportSection', backref='event', lazy='dynamic')
+    options = db.relationship('RunReportOption', backref='event', lazy='dynamic')
 
     def __repr__(self):
         return '{} {}'.format(self.event_name, self.event_number)
 
 
-class EventOption(db.Model):
+class RunReportOption(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    run_report_id = db.Column(db.Integer, db.ForeignKey('run_report.id'))
     key = db.Column(db.String(50), index=True)
     value = db.Column(db.String(50))
 
 
-class EventSection(db.Model):
+class RunReportSection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    run_report_id = db.Column(db.Integer, db.ForeignKey('run_report.id'))
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'))
     order = db.Column(db.Integer)
     display = db.Column(db.Integer)
 
 
-class EventSectionText(db.Model):
+class RunReportSectionText(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    event_section_id = db.Column(db.Integer, db.ForeignKey('event_section.id'))
+    run_report_section_id = db.Column(db.Integer, db.ForeignKey('run_report_section.id'))
     part = db.Column(db.String(50))
     text = db.Column(db.String(250))
