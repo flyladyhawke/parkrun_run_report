@@ -173,6 +173,7 @@ def run_report_update(run_report_id):
         event_results=event_results,
         photos=photos,
         breadcrumbs=breadcrumbs,
+        accordions=['accordion']
     )
 
 

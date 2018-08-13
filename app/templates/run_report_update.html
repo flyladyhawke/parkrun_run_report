@@ -3,6 +3,9 @@
 
 {% block app_content %}
     <h2 class="sub_title">Update Run Report</h2>
+    <div id="accordion">
+    <h3>Sections</h3>
+    <div>
     <div class="row">
         <div class="col-md-4">
             {{ wtf.quick_form(form, button_map={'submit': 'warning'}) }}
@@ -32,8 +35,9 @@
     {% endfor %}
     </tbody>
     </table>
-    <br/>
-    <hr/>
+    </div>
+    <h3>Photos</h3>
+    <div>
     <table class="table" id="event-photo-list" data-page-length='25'>
         <thead>
         <tr>
@@ -60,8 +64,9 @@
     {% endfor %}
     </tbody>
     </table>
-    <br/>
-    <hr/>
+    </div>
+    <h3>Results</h3>
+    <div>
     <table class="table" id="event-result-list" data-page-length='25'>
         <thead>
         <tr>
@@ -79,4 +84,5 @@
     {% endfor %}
     </tbody>
     </table>
+    </div>
 {% endblock %}
