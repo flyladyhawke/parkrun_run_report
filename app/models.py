@@ -54,9 +54,11 @@ class RunReport(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_name = db.Column(db.String(50), index=True)
     event_number = db.Column(db.Integer, index=True)
+    journalist_report = db.Column(db.Text)
     created_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     sections = db.relationship('RunReportSection', backref='event', lazy='dynamic')
     options = db.relationship('RunReportOption', backref='event', lazy='dynamic')
+    results = db.relationship('RunReportResult', backref='event', lazy='dynamic')
 
     def __repr__(self):
         return '{} {}'.format(self.event_name, self.event_number)
@@ -75,6 +77,7 @@ class RunReportSection(db.Model):
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'))
     order = db.Column(db.Integer)
     display = db.Column(db.Integer)
+    photos = db.relationship('RunReportPhoto', backref='section', lazy='dynamic')
 
 
 class RunReportSectionText(db.Model):
@@ -82,3 +85,19 @@ class RunReportSectionText(db.Model):
     run_report_section_id = db.Column(db.Integer, db.ForeignKey('run_report_section.id'))
     part = db.Column(db.String(50))
     text = db.Column(db.String(250))
+
+
+class RunReportPhoto(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    run_report_section_id = db.Column(db.Integer, db.ForeignKey('run_report_section.id'))
+    link = db.Column(db.String(250))
+    width = db.Column(db.Integer)
+    height = db.Column(db.Integer)
+    title = db.Column(db.String(250))
+
+
+class RunReportResult(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    run_report_id = db.Column(db.Integer, db.ForeignKey('run_report.id'))
+    event_result = db.Column(db.Text)
+    is_current = db.Column(db.Integer)

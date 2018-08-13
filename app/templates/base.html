@@ -31,7 +31,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li><a href="/index">Home</a></li>
-                    <li><a href="{{ url_for('create') }}">Create Run Report</a></li>
+                    <li><a href="{{ url_for('run_report_add') }}">Create Run Report</a></li>
                     {% if current_user.is_authenticated and current_user.level >= 2 %}
                     <li><a href="{{ url_for('admin') }}">Admin</a></li>
                     {% endif %}

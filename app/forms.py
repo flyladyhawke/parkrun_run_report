@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TextAreaField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 from app.models import RunReport, Section, User
@@ -43,6 +43,7 @@ class RegistrationForm(FlaskForm):
 class RunReportForm(FlaskForm):
     event_name = StringField('Event Name', validators=[DataRequired()])
     event_number = StringField('Event Number', validators=[DataRequired()])
+    journalist_report = TextAreaField('Journalist report')
     week_number = SelectField('Week Number',  choices=[('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')])
     parameters = StringField('Parameters')
     submit = SubmitField('Create and show URLS')
@@ -67,5 +68,5 @@ class RunReportSectionForm(FlaskForm):
         query_factory=lambda: Section.query.order_by(Section.default_order.asc()).all()
     )
     order = StringField('Order')
-    display = StringField('Display')
+    display = BooleanField('Display')
     submit = SubmitField('Add')
