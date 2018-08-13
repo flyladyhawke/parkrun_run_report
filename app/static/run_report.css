@@ -4,8 +4,8 @@ h1.page_title
     padding-top: 0;
     margin-bottom: 0;
     text-align: center;
-    background-color: #ffc107;
-    border: 1px solid #ffc107;
+    background-color: #f0b000;
+    border: 1px solid #f0b000;
     border-radius: 10px 10px 0 0;
 }
 h2.sub_title
@@ -21,7 +21,7 @@ ol.breadcrumb
     margin-bottom: 10px !important;
     padding-bottom: 10px !important;
     padding-top: 10px !important;
-    border: 1px solid #ffc107;
+    border: 1px solid #f0b000;
     border-radius: 0 0 10px 10px;
 }
 div.alert

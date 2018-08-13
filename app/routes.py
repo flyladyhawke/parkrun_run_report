@@ -1,6 +1,6 @@
 from flask import render_template, url_for, redirect, flash, request
 from app import app, db
-from app.forms import RunReportForm, RunReportSectionForm, SectionForm, LoginForm, RegistrationForm
+from app.forms import RunReportForm, RunReportSectionForm, SectionForm, LoginForm, RegistrationForm, PasswordResetForm
 from src import run_report_utils
 from app.models import RunReport, RunReportSection, Section, User
 from flask_login import login_required, current_user, login_user, logout_user
@@ -66,6 +66,24 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/password_reset', methods=['GET', 'POST'])
+@login_required
+def password_reset():
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(id=current_user.id).first()
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Password Reset!', 'success')
+        return redirect(url_for('index'))
+    breadcrumbs = [
+        {'link': url_for('index'), 'text': 'Home', 'visible': True},
+        {'text': 'Password Reset'}
+    ]
+    return render_template('auth/password_reset.html', title='Password Reset', form=form, breadcrumbs=breadcrumbs)
 
 
 @app.route('/run_reports', methods=['GET', 'POST'])
