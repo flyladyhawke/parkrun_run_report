@@ -14,15 +14,6 @@
     {{super()}}
     <script type="text/javascript" charset="utf8" src="{{url_for('.static', filename='js/jquery-ui.min.js')}}"></script>
     <script type="text/javascript" charset="utf8" src="{{url_for('.static', filename='js/datatables.min.js')}}"></script>
-    {% if accordions %}
-        <script type="text/javascript">
-          $( function() {
-              {% for accordion in accordions %}
-              $( "#{{ accordion }}" ).accordion();
-              {% endfor %}
-          } );
-        </script>
-    {% endif %}
     {% if tables %}
         <script type="text/javascript">
         $(document).ready( function () {
@@ -64,7 +55,7 @@
 
 {% block content %}
     <div class="container">
-        <h1 class="page_title p-3 mb-2">parkrun - Run Report</h1>
+        <h1 class="page_title parkrun p-3 mb-2">parkrun - Run Report</h1>
         {% if breadcrumbs %}
         <nav aria-label="breadcrumb">
         <ol class="breadcrumb">

@@ -3,86 +3,113 @@
 
 {% block app_content %}
     <h2 class="sub_title">Update Run Report</h2>
-    <div id="accordion">
-    <h3>Sections</h3>
-    <div>
-    <div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form, button_map={'submit': 'warning'}) }}
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading parkrun">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-sections">Sections</a>
+                </h4>
+            </div>
+            <div id="collapse-sections" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ wtf.quick_form(form, button_map={'submit': 'warning'}) }}
+                        </div>
+                    </div>
+                    <br/>
+                    <hr/>
+                    <table class="table" id="event-section-list" data-page-length='25'>
+                        <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Order</th>
+                            <th>Display</th>
+                            <th data-searchable="false" data-orderable="false">Actions</th>
+                        </tr>
+                        </thead>
+                    <tbody>
+                    {% for item in sections %}
+                        <tr>
+                            <td>{{ item.section }}</td>
+                            <td>{{ item.order }}</td>
+                            <td>{{ 'Yes' if item.display else 'No' }}</td>
+                            <td>
+                            <a href="{{ url_for('run_report_section_delete', run_report_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
-    <br/>
-    <hr/>
-    <table class="table" id="event-section-list" data-page-length='25'>
-        <thead>
-        <tr>
-            <th>Section</th>
-            <th>Order</th>
-            <th>Display</th>
-            <th data-searchable="false" data-orderable="false">Actions</th>
-        </tr>
-        </thead>
-    <tbody>
-    {% for item in sections %}
-        <tr>
-            <td>{{ item.section }}</td>
-            <td>{{ item.order }}</td>
-            <td>{{ 'Yes' if item.display else 'No' }}</td>
-            <td>
-            <a href="{{ url_for('run_report_section_delete', run_report_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-    </table>
-    </div>
-    <h3>Photos</h3>
-    <div>
-    <table class="table" id="event-photo-list" data-page-length='25'>
-        <thead>
-        <tr>
-            <th>Section</th>
-            <th>Link</th>
-            <th>Width</th>
-            <th>Height</th>
-            <th>Title</th>
-            <th data-searchable="false" data-orderable="false">Actions</th>
-        </tr>
-        </thead>
-    <tbody>
-    {% for item in photos %}
-        <tr>
-            <td>{{ item.section }}</td>
-            <td>{{ item.link }}</td>
-            <td>{{ item.width }}</td>
-            <td>{{ item.height }}</td>
-            <td>{{ item.title }}</td>
-            <td>
-            <a href="{{ url_for('run_report_section_delete', run_report_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-    </table>
-    </div>
-    <h3>Results</h3>
-    <div>
-    <table class="table" id="event-result-list" data-page-length='25'>
-        <thead>
-        <tr>
-            <th>Text</th>
-            <th data-searchable="false" data-orderable="false">Actions</th>
-        </tr>
-        </thead>
-    <tbody>
-    {% for item in results %}
-        <tr>
-            <td>{{ item.text }}</td>
-            <a href="{{ url_for('run_report_section_delete', run_report_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-    </table>
+        <div class="panel panel-default">
+            <div class="panel-heading parkrun">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-photos">Photos</a>
+                </h4>
+            </div>
+            <div id="collapse-photos" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table" id="event-photo-list" data-page-length='25'>
+                        <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Link</th>
+                            <th>Width</th>
+                            <th>Height</th>
+                            <th>Title</th>
+                            <th data-searchable="false" data-orderable="false">Actions</th>
+                        </tr>
+                        </thead>
+                    <tbody>
+                    {% for item in photos %}
+                        <tr>
+                            <td>{{ item.section }}</td>
+                            <td>{{ item.link }}</td>
+                            <td>{{ item.width }}</td>
+                            <td>{{ item.height }}</td>
+                            <td>{{ item.title }}</td>
+                            <td>
+                            <a href="{{ url_for('run_report_section_delete', run_report_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading parkrun">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-results">Results</a>
+                </h4>
+            </div>
+            <div id="collapse-results" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <table class="table" id="event-result-list" data-page-length='25'>
+                        <thead>
+                        <tr>
+                            <th>Text</th>
+                            <th data-searchable="false" data-orderable="false">Actions</th>
+                        </tr>
+                        </thead>
+                    <tbody>
+                    {% for item in results %}
+                        <tr>
+                            <td>{{ item.text }}</td>
+                            <a href="{{ url_for('run_report_section_delete', run_report_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
