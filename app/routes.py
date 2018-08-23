@@ -1,6 +1,7 @@
 from flask import render_template, url_for, redirect, flash, request
 from app import app, db
-from app.forms import RunReportForm, RunReportSectionForm, SectionForm, LoginForm, RegistrationForm, PasswordResetForm
+from app.forms import RunReportForm, RunReportSectionForm, SectionForm, LoginForm, RegistrationForm, PasswordResetForm, \
+    RunReportPhotoForm, RunReportResultForm
 from src import run_report_utils
 from app.models import RunReport, RunReportSection, Section, User, RunReportResult, RunReportPhoto
 from flask_login import login_required, current_user, login_user, logout_user
@@ -138,27 +139,64 @@ def run_report_add():
 
 @app.route('/run_report/update/<run_report_id>', methods=['GET', 'POST'])
 def run_report_update(run_report_id):
-    form = RunReportSectionForm()
-    if form.validate_on_submit():
-        # Check whether there is already this section
-        found = RunReportSection.query.filter_by(run_report_id=run_report_id, section_id=form.section_id.data.id).first()
-        if found:
-            flash('This section was already added.', 'danger')
-        else:
-            model = RunReportSection()
-            form.populate_obj(model)
-            model.section_id = model.section_id.id
-            model.run_report_id = model.run_report_id.id
-            db.session.add(model)
-            db.session.commit()
-            flash('This section has been added', 'success')
-    elif request.method == 'GET':
-        form.run_report_id = run_report_id
-        form.display.data = 1
+    forms = {
+        'RunReportSection': RunReportSectionForm(),
+        'RunReportPhoto': RunReportPhotoForm(),
+        'RunReportResult': RunReportResultForm(),
+    }
+    active = 'RunReportSection'
+
+    for name, form in forms.items():
+        if name == 'RunReportSection':
+            if form.validate_on_submit() and form.section_id.data:
+                # Check whether there is already this section
+                found = RunReportSection.query.filter_by(run_report_id=run_report_id, section_id=form.section_id.data.id).first()
+                if found:
+                    flash('This was already added.', 'danger')
+                else:
+                    model = RunReportSection()
+                    form.populate_obj(model)
+                    model.section_id = model.section_id.id
+                    model.run_report_id = model.run_report_id.id
+                    db.session.add(model)
+                    db.session.commit()
+                    flash('This has been added', 'success')
+        elif name == 'RunReportPhoto':
+            if form.validate_on_submit() and form.link.data:
+                active = 'RunReportPhoto'
+                # Check whether there is already this link
+                found = RunReportPhoto.query.filter_by(link=form.link.data).first()
+                if found:
+                    flash('This was already added.', 'danger')
+                else:
+                    model = RunReportPhoto()
+                    form.populate_obj(model)
+                    model.run_report_section_id = model.run_report_section_id.id
+                    db.session.add(model)
+                    db.session.commit()
+                    flash('This has been added', 'success')
+        elif name == 'RunReportResult':
+            if form.validate_on_submit() and form.event_result.data:
+                active = 'RunReportResult'
+                # Check whether there is already this link
+                found = RunReportResult.query.filter_by(event_result=form.event_result.data).first()
+                if found:
+                    flash('This was already added.', 'danger')
+                else:
+                    model = RunReportResult()
+                    form.populate_obj(model)
+                    model.run_report_id = model.run_report_id.id
+                    db.session.add(model)
+                    db.session.commit()
+                    flash('This has been added', 'success')
+
+    if request.method == 'GET':
+        forms['RunReportSection'].run_report_id = run_report_id
+        forms['RunReportSection'].display.data = 1
     current = RunReport.query.filter_by(id=run_report_id).first()
     sections = RunReportSection.query.filter_by(run_report_id=run_report_id)
     event_results = RunReportResult.query.filter_by(run_report_id=run_report_id)
-    photos = current.sections.join(RunReportSection.photos).filter_by(run_report_section_id=RunReportSection.id)
+    photos = RunReportPhoto.query.join(RunReportPhoto.section).filter_by(run_report_id=run_report_id)
     breadcrumbs = [
         {'link': url_for('index'), 'text': 'Home', 'visible': True},
         {'link': url_for('run_report_list'), 'text': 'Run Reports', 'visible': True},
@@ -167,10 +205,11 @@ def run_report_update(run_report_id):
     return render_template(
         'run_report_update.html',
         title='Sections',
-        form=form,
+        forms=forms,
+        active=active,
         current=current,
         sections=sections,
-        event_results=event_results,
+        results=event_results,
         photos=photos,
         breadcrumbs=breadcrumbs,
         accordions=['accordion']
@@ -187,8 +226,6 @@ def run_report_export(run_report_id):
         {'text': 'Export'}
     ]
     week = RunReportWeek(current.event_name, current.event_number)
-
-
     html = week.create_week(4)
     return render_template(
         'export.html',

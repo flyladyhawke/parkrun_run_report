@@ -79,6 +79,9 @@ class RunReportSection(db.Model):
     display = db.Column(db.Integer)
     photos = db.relationship('RunReportPhoto', backref='section', lazy='dynamic')
 
+    def __repr__(self):
+        return '{}'.format(self.section.name)
+
 
 class RunReportSectionText(db.Model):
     id = db.Column(db.Integer, primary_key=True)

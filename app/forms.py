@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TextAreaField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
-from app.models import RunReport, Section, User
+from app.models import RunReport, Section, User, RunReportSection
 
 
 class LoginForm(FlaskForm):
@@ -56,6 +56,19 @@ class SectionForm(FlaskForm):
     submit = SubmitField('Add')
 
 
+class RunReportPhotoForm(FlaskForm):
+    run_report_section_id =  QuerySelectField(
+        'RunReportSection',
+        validators=[DataRequired()],
+        query_factory=lambda: RunReportSection.query.order_by(RunReportSection.order.asc()).all()
+    )
+    link = StringField('Link', validators=[DataRequired()])
+    width = StringField('Width')
+    height = StringField('Height')
+    title = StringField('Title')
+    submit = SubmitField('Add')
+
+
 class RunReportSectionForm(FlaskForm):
     run_report_id = QuerySelectField(
         'Run Report',
@@ -69,4 +82,15 @@ class RunReportSectionForm(FlaskForm):
     )
     order = StringField('Order')
     display = BooleanField('Display')
+    submit = SubmitField('Add')
+
+
+class RunReportResultForm(FlaskForm):
+    run_report_id = QuerySelectField(
+        'Run Report',
+        validators=[DataRequired()],
+        query_factory=lambda: RunReport.query.order_by(RunReport.event_name.asc()).all()
+    )
+    event_result = TextAreaField('Event Result')
+    is_current = BooleanField('Is Current')
     submit = SubmitField('Add')

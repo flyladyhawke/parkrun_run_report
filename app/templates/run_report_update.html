@@ -6,15 +6,13 @@
     <div class="panel-group" id="accordion">
         <div class="panel panel-default">
             <div class="panel-heading parkrun">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-sections">Sections</a>
-                </h4>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse-sections"><h4 class="panel-title">Sections</h4></a>
             </div>
-            <div id="collapse-sections" class="panel-collapse collapse in">
+            <div id="collapse-sections" class="panel-collapse collapse{% if active == 'RunReportSection' %} in{% endif %}">
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-4">
-                            {{ wtf.quick_form(form, button_map={'submit': 'warning'}) }}
+                            {{ wtf.quick_form(forms['RunReportSection'], button_map={'submit': 'warning'}) }}
                         </div>
                     </div>
                     <br/>
@@ -46,12 +44,17 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-heading parkrun">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-photos">Photos</a>
-                </h4>
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse-photos"><h4 class="panel-title">Photos</h4></a>
             </div>
-            <div id="collapse-photos" class="panel-collapse collapse">
+            <div id="collapse-photos" class="panel-collapse collapse{% if active == 'RunReportPhoto' %} in{% endif %}">
                 <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ wtf.quick_form(forms['RunReportPhoto'], button_map={'submit': 'warning'}) }}
+                        </div>
+                    </div>
+                    <br/>
+                    <hr/>
                     <table class="table" id="event-photo-list" data-page-length='25'>
                         <thead>
                         <tr>
@@ -78,36 +81,42 @@
                     {% endfor %}
                     </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
         <div class="panel panel-default">
             <div class="panel-heading parkrun">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-results">Results</a>
-                </h4>
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse-results"><h4 class="panel-title">Results</h4></a>
             </div>
-            <div id="collapse-results" class="panel-collapse collapse">
+            <div id="collapse-results" class="panel-collapse collapse{% if active == 'RunReportResult' %} in{% endif %}">
                 <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ wtf.quick_form(forms['RunReportResult'], button_map={'submit': 'warning'}) }}
+                        </div>
+                    </div>
+                    <br/>
+                    <hr/>
                     <table class="table" id="event-result-list" data-page-length='25'>
                         <thead>
                         <tr>
                             <th>Text</th>
+                            <th>Is Current</th>
                             <th data-searchable="false" data-orderable="false">Actions</th>
                         </tr>
                         </thead>
                     <tbody>
                     {% for item in results %}
                         <tr>
-                            <td>{{ item.text }}</td>
+                            <td>{{ item.event_result }}</td>
+                            <td>{{ 'Yes' if item.is_current else 'No' }}</td>
+                            <td>
                             <a href="{{ url_for('run_report_section_delete', run_report_section_id=item.id) }}" title="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
